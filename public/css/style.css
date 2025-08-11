@@ -220,6 +220,7 @@ body {
 .new_message_input {
     margin: 0 40px;
     margin-bottom: 30px;
+    box-sizing: border-box;
     width: calc(100% - 80px);
     height: 60px;
     color: #676f7a;

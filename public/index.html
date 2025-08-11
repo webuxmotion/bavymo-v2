@@ -25,7 +25,7 @@
                         <p class="personal_code_title_paragraph">Your personal code</p>
                     </div>
                     <div class="personal_code_value_container">
-                        <p class="personal_code_value_paragraph" id="personal_code_paragraph">sdfsdwer434fSde</p>
+                        <p class="personal_code_value_paragraph" id="personal_code_paragraph">-</p>
                         <button class="personal_code_copy_button" id="personal_code_copy_button">
                             <img src="/images/copyButton.png" alt="copy button icon">
                         </button>
@@ -101,7 +101,7 @@
                         <img src="/images/hangUp.png" alt="">
                     </button>
                 </div>
-                <div class="video_recording_buttons_container" id="video_recording_buttons_container">
+                <div class="video_recording_buttons_container display_none" id="video_recording_buttons_container">
                     <button id="pause_recording_button">
                         <img src="/images/pause.png" alt="" />
                     </button>
@@ -116,11 +116,23 @@
         </div>
 
         <div class="messenger_container">
+            <div class="messages_container" id="messages_container">
 
+            </div>
+            <div class="new_message_container display_none" id="new_message">
+                <input type="text" class="new_message_input" id="new_message_input"
+                    placeholder="Type your message..." />
+                <button class="send_message_button" id="send_message_button">
+                    <img src="/images/sendMessageButton.png" alt="" class="send_message_button_image">
+                </button>
+            </div>
         </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
+    <script src="./js/ui.js" type="module"></script>
+    <script src="./js/store.js" type="module"></script>
+    <script src="./js/wss.js" type="module"></script>
     <script src="./js/main.js" type="module"></script>
 </body>
 
