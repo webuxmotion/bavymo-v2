@@ -35,14 +35,12 @@ app.use((0, express_session_1.default)({
 }));
 io.on('connection', (socket) => {
     storage_1.default.addNewPeer(socket.id);
-    console.log(socket.id);
     socket.on('message', (data) => {
         console.log(`Message from ${socket.id}: ${data}`);
         io.emit('message', data);
     });
     socket.on('disconnect', () => {
         storage_1.default.removePeer(socket.id);
-        console.log(storage_1.default.getConnectedPeers());
     });
 });
 exports.default = server;

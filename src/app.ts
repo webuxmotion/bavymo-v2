@@ -37,8 +37,6 @@ app.use(session({
 io.on('connection', (socket: Socket) => {
   storage.addNewPeer(socket.id);
 
-  console.log(socket.id);
-
   socket.on('message', (data: string) => {
     console.log(`Message from ${socket.id}: ${data}`);
     io.emit('message', data);
@@ -46,8 +44,6 @@ io.on('connection', (socket: Socket) => {
 
   socket.on('disconnect', () => {
     storage.removePeer(socket.id);
-
-    console.log(storage.getConnectedPeers());
   });
 });
 

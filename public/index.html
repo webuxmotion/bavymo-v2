@@ -46,30 +46,75 @@
                         </button>
                     </div>
                 </div>
+            </div>
 
-                <div class="stranger_connecting_container">
-                    <p class="stranger_title_container">Stranger</p>
-                    <div class="stranger_buttons_container">
-                        <button class="connecting_button" id="stranger_chat_button">
-                            <img src="/images/chatButton.png" alt="" class="connecting_buttons_image">
-                        </button>
-                        <button class="connecting_button" id="stranger_video_button">
-                            <img src="/images/videoButton.png" alt="" class="connecting_buttons_image">
-                        </button>
-                    </div>
+            <div class="stranger_connecting_container">
+                <p class="stranger_title_container">Stranger</p>
+                <div class="stranger_buttons_container">
+                    <button class="connecting_button" id="stranger_chat_button">
+                        <img src="/images/chatButton.png" alt="" class="connecting_buttons_image">
+                    </button>
+                    <button class="connecting_button" id="stranger_video_button">
+                        <img src="/images/videoButton.png" alt="" class="connecting_buttons_image">
+                    </button>
                 </div>
+            </div>
 
-                <div class="checkbox_container">
-                    <div class="checkbox_connection" id="allow_strangers_checkbox">
-                        <img src="/images/check.png" alt="" id="allow_strangers_checkbox_image" class="display_none">
-                    </div>
-                     <p class="checkbox_container_paragraph">Allow connection from strangers</p>
+            <div class="checkbox_container">
+                <div class="checkbox_connection" id="allow_strangers_checkbox">
+                    <img src="/images/check.png" alt="" id="allow_strangers_checkbox_image" class="display_none">
+                </div>
+                <p class="checkbox_container_paragraph">Allow connection from strangers</p>
+            </div>
+
+            <div class="dashboard_blur display_none" id="dashboard_blur"></div>
+        </div>
+
+        <div class="call_container">
+            <div class="videos_container">
+                <div id="video_placeholder" class="videos_placeholder">
+                    <img src="/images/logo.png" alt="">
+                </div>
+                <video src="" class="remote_video display_none" id="remote_video" autoplay></video>
+                <div class="local_video_container">
+                    <video src="" class="local_video" id="local_video" muted autoplay></video>
+                </div>
+                <div class="call_buttons_container display_none" id="call_buttons">
+                    <button class="call_button_small" id="mic_button">
+                        <img src="/images/mic.png" id="mic_button_image" alt="">
+                    </button>
+                    <button class="call_button_small" id="camera_button">
+                        <img src="/images/camera.png" id="camera_button_image" alt="">
+                    </button>
+                    <button class="call_button_large" id="hang_up_button">
+                        <img src="/images/hangUp.png" alt="">
+                    </button>
+                    <button class="call_button_small" id="screen_sharing_button">
+                        <img src="/images/switchCameraScreenSharing.png" alt="">
+                    </button>
+                    <button class="call_button_small" id="start_recording_button">
+                        <img src="/images/recordingStart.png" alt="">
+                    </button>
+                </div>
+                <div class="finish_chat_button_container display_none" id="finish_chat_button_container">
+                    <button class="call_button_large" id="finish_chat_call_button">
+                        <img src="/images/hangUp.png" alt="">
+                    </button>
+                </div>
+                <div class="video_recording_buttons_container" id="video_recording_buttons_container">
+                    <button id="pause_recording_button">
+                        <img src="/images/pause.png" alt="" />
+                    </button>
+                    <button id="resume_recording_button" class="display_none">
+                        <img src="/images/resume.png" alt="" />
+                    </button>
+                    <button id="stop_recording_button">
+                        Stop recording
+                    </button>
                 </div>
             </div>
         </div>
-        <div class="call_container">
 
-        </div>
         <div class="messenger_container">
 
         </div>
