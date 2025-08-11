@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bavymo – Video Calls with Games</title>
+    <link rel="stylesheet" href="./css/style.css" />
+</head>
+
+<body>
+    <div class="main_container">
+        <div class="dashboard_container">
+            <div class="logo_container"><img src="/images/logo.png" alt="logo"></div>
+            <div>
+
+                <div class="description_container">
+                    <p class="description_container_paragraph">Talk with other user by passing his personal code or talk
+                        with
+                        strangers</p>
+                </div>
+
+                <div class="personal_code_container">
+                    <div class="personal_code_title_container">
+                        <p class="personal_code_title_paragraph">Your personal code</p>
+                    </div>
+                    <div class="personal_code_value_container">
+                        <p class="personal_code_value_paragraph" id="personal_code_paragraph">sdfsdwer434fSde</p>
+                        <button class="personal_code_copy_button" id="personal_code_copy_button">
+                            <img src="/images/copyButton.png" alt="copy button icon">
+                        </button>
+                    </div>
+                </div>
+
+                <div class="personal_code_connecting_container">
+                    <p class="personal_code_connecting_paragraph">Personal Code</p>
+                    <div class="personal_code_connecting_input_container">
+                        <input type="text" class="personal_code_input" id="personal_code_input">
+                    </div>
+                    <div class="personal_code_connecting_buttons_container">
+                        <button class="connecting_button" id="personal_code_chat_button">
+                            <img src="/images/chatButton.png" alt="" class="connecting_buttons_image">
+                        </button>
+                        <button class="connecting_button" id="personal_code_video_button">
+                            <img src="/images/videoButton.png" alt="" class="connecting_buttons_image">
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stranger_connecting_container">
+                    <p class="stranger_title_container">Stranger</p>
+                    <div class="stranger_buttons_container">
+                        <button class="connecting_button" id="stranger_chat_button">
+                            <img src="/images/chatButton.png" alt="" class="connecting_buttons_image">
+                        </button>
+                        <button class="connecting_button" id="stranger_video_button">
+                            <img src="/images/videoButton.png" alt="" class="connecting_buttons_image">
+                        </button>
+                    </div>
+                </div>
+
+                <div class="checkbox_container">
+                    <div class="checkbox_connection" id="allow_strangers_checkbox">
+                        <img src="/images/check.png" alt="" id="allow_strangers_checkbox_image" class="display_none">
+                    </div>
+                     <p class="checkbox_container_paragraph">Allow connection from strangers</p>
+                </div>
+            </div>
+        </div>
+        <div class="call_container">
+
+        </div>
+        <div class="messenger_container">
+
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="./js/main.js" type="module"></script>
+</body>
+
+</html>
