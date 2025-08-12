@@ -7,6 +7,24 @@ export const updatePersonalCode = (personalCode) => {
     personalCodeParagraph.innerHTML = personalCode;
 }
 
+export const updateLocalVideo = (stream) => {
+    const localVideo = document.getElementById('local_video');
+    localVideo.srcObject = stream;
+
+    localVideo.addEventListener('loadedmetadata', () => {
+        localVideo.play();
+    });
+}
+
+export const updateRemoteVideo = (stream) => {
+    const remoteVideo = document.getElementById('remote_video');
+    remoteVideo.srcObject = stream;
+
+    remoteVideo.addEventListener('loadedmetadata', () => {
+        remoteVideo.play();
+    });
+}
+
 export const clearDialogAndAppend = (domElement) => {
     const dialogContainer = removeAllDialogs();
     dialogContainer.appendChild(domElement);
@@ -67,5 +85,68 @@ export const showInfoDialog = (preOfferAnswer) => {
         setTimeout(() => {
             removeAllDialogs();
         }, [4000]);
+    }
+}
+
+export const showCallElements = (callType) => {
+    if (callType === constants.callType.CHAT_PERSONAL_CODE) {
+        showChatCallElements();
+    }
+
+    if (callType === constants.callType.VIDEO_PERSONAL_CODE) {
+        showVideoCallElements();
+    }
+}
+
+const showChatCallElements = () => {
+    const finishChatButtonContainer = document.getElementById('finish_chat_button_container');
+    showElement(finishChatButtonContainer);
+
+    const newMessageInput = document.getElementById('new_message');
+    showElement(newMessageInput);
+
+    disableDashboard();
+}
+
+const showVideoCallElements = () => {
+    const callButtons = document.getElementById('call_buttons');
+    showElement(callButtons);
+
+    const videoPlaceholder = document.getElementById('video_placeholder');
+    hideElement(videoPlaceholder);
+
+    const remoteVideo = document.getElementById('remote_video');
+    showElement(remoteVideo);
+
+    const newMessageInput = document.getElementById('new_message');
+    showElement(newMessageInput);
+
+    disableDashboard();
+}
+
+// ui helpers
+const enableDashboard = () => {
+    const dashboardBlocker = document.getElementById('dashboard_blur');
+    if (!dashboardBlocker.classList.contains('display_none')) {
+        dashboardBlocker.classList.add('display_none');
+    }
+}
+
+const disableDashboard = () => {
+    const dashboardBlocker = document.getElementById('dashboard_blur');
+    if (dashboardBlocker.classList.contains('display_none')) {
+        dashboardBlocker.classList.remove('display_none');
+    }
+}
+
+const hideElement = (element) => {
+    if (!element.classList.contains('display_none')) {
+        element.classList.add('display_none');
+    }
+}
+
+const showElement = (element) => {
+    if (element.classList.contains('display_none')) {
+        element.classList.remove('display_none');
     }
 }

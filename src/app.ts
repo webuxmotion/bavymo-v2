@@ -70,6 +70,15 @@ io.on('connection', (socket: Socket) => {
     }
   });
 
+  socket.on('webRTC-signaling', (data) => {
+    const { connectedUserSocketId } = data;
+    const connectedPeer = storage.getConnectedPeer(connectedUserSocketId);
+
+    if (connectedPeer) {
+      io.to(connectedUserSocketId).emit('webRTC-signaling', data);
+    }
+  });
+
   socket.on('message', (data: string) => {
     console.log(`Message from ${socket.id}: ${data}`);
     io.emit('message', data);

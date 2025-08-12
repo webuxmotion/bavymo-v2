@@ -95,6 +95,8 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
+    position: relative;
+    z-index: 200;
 }
 
 .personal_code_title_container {
@@ -380,7 +382,7 @@ body {
 
 .dialog_wrapper {
     position: fixed;
-    z-index: 2;
+    z-index: 500;
     width: 100%;
     height: 100%;
     background: rgba(255, 255, 255, 0.2);
@@ -470,6 +472,7 @@ body {
     top: 0;
     background: rgba(196, 196, 196, 0.2);
     background-filter: blur(80px);
+    z-index: 400;
 }
 
 .video_recording_buttons_container {
