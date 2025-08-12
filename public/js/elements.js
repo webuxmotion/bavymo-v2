@@ -1,5 +1,6 @@
 export const getIncomingCallDialog = (callTypeInfo, acceptCallHandler, rejectCallHandler) => {
-  const dialogHTML = `
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = `
     <div class="dialog_wrapper">
       <div class="dialog_content">
         <p class="dialog_title">Incoming ${callTypeInfo} Call</p>
@@ -7,10 +8,10 @@ export const getIncomingCallDialog = (callTypeInfo, acceptCallHandler, rejectCal
           <img src="/images/dialogAvatar.png" alt="Caller avatar" />
         </div>
         <div class="dialog_button_container">
-          <button id="acceptBtn" class="dialog_accept_call_button">
+          <button id="accept_button" class="dialog_accept_call_button">
             <img src="/images/acceptCall.png" class="dialog_button_image" alt="" />
           </button>
-          <button id="rejectBtn" class="dialog_reject_call_button">
+          <button id="reject_button" class="dialog_reject_call_button">
             <img src="/images/rejectCall.png" class="dialog_button_image" alt="" />
           </button>
         </div>
@@ -18,10 +19,31 @@ export const getIncomingCallDialog = (callTypeInfo, acceptCallHandler, rejectCal
     </div>
   `;
 
-  const dialogContainer = document.getElementById('dialog');
-  dialogContainer.innerHTML = dialogHTML;
+  wrapper.querySelector('#accept_button').addEventListener('click', acceptCallHandler);
+  wrapper.querySelector('#reject_button').addEventListener('click', rejectCallHandler);
 
-  // Attach events after inserting into DOM
-  document.getElementById('acceptBtn').addEventListener('click', acceptCallHandler);
-  document.getElementById('rejectBtn').addEventListener('click', rejectCallHandler);
+  return wrapper.firstElementChild; // Return actual DOM element
 };
+
+export const getOutcomingCallDialog = (rejectOutcomingCallHandler) => {
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = `
+    <div class="dialog_wrapper">
+      <div class="dialog_content">
+        <p class="dialog_title">Calling...</p>
+        <div class="dialog_image_container">
+          <img src="/images/dialogAvatar.png" alt="Caller avatar" />
+        </div>
+        <div class="dialog_button_container">
+          <button id="reject_button" class="dialog_reject_call_button">
+            <img src="/images/rejectCall.png" class="dialog_button_image" alt="" />
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  wrapper.querySelector('#reject_button').addEventListener('click', rejectOutcomingCallHandler);
+
+  return wrapper.firstElementChild; // Return actual DOM element
+}
