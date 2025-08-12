@@ -47,3 +47,20 @@ export const getOutcomingCallDialog = (rejectOutcomingCallHandler) => {
 
   return wrapper.firstElementChild; // Return actual DOM element
 }
+
+export const getInfoDialog = (title, description, iconFilename = 'dialogAvatar.png') => {
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = `
+    <div class="dialog_wrapper">
+      <div class="dialog_content">
+        <p class="dialog_title">${title}</p>
+        <div class="dialog_image_container">
+          <img src="/images/${iconFilename}" alt="info dialog icon" />
+        </div>
+        <p class="dialog_description">${description}</p>
+      </div>
+    </div>
+  `;
+
+  return wrapper.firstElementChild; // Return actual DOM element
+}

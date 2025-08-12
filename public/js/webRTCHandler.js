@@ -43,14 +43,47 @@ export const handlePreOffer = (data) => {
     }
 }
 
+export const handlePreOfferAnswer = (data) => {
+    const {
+        preOfferAnswer
+    } = data;
+
+    ui.removeAllDialogs();
+
+    if (preOfferAnswer === constants.preOfferAnswer.CALLEE_NOT_FOUND) {
+        ui.showInfoDialog(preOfferAnswer);
+    }
+
+    if (preOfferAnswer === constants.preOfferAnswer.CALL_UNAVAILABLE) {
+        ui.showInfoDialog(preOfferAnswer);
+    }
+
+    if (preOfferAnswer === constants.preOfferAnswer.CALL_REJECTED) {
+        ui.showInfoDialog(preOfferAnswer);
+    }
+
+    if (preOfferAnswer === constants.preOfferAnswer.CALL_ACCEPTED) {
+        ui.showInfoDialog(preOfferAnswer);
+    }
+}
+
 function acceptCallHandler() {
-    console.log('accept');
+    sendPreOfferAnswer(constants.preOfferAnswer.CALL_ACCEPTED);
 }
 
 function rejectCallHandler() {
-    console.log('reject');
+    sendPreOfferAnswer(constants.preOfferAnswer.CALL_REJECTED);
 }
 
 function rejectOutcomingCallHandler() {
     console.log('rejectOutcomingCallHandler');
+}
+
+function sendPreOfferAnswer(preOfferAnswer) {
+    const data = {
+        callerSocketId: connectedUserDetails.socketId,
+        preOfferAnswer,
+    }
+    ui.removeAllDialogs();
+    wss.sendPreOfferAnswer(data);
 }

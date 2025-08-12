@@ -11,6 +11,10 @@ export const registerSocketEvents = (socket) => {
         webRTCHandler.handlePreOffer(data);
     });
 
+    socket.on('pre-offer-answer', (data) => {
+        webRTCHandler.handlePreOfferAnswer(data);
+    });
+
     socket.on("connect", () => {
         store.setSocketId(socket.id);
         ui.updatePersonalCode(socket.id);
@@ -19,4 +23,8 @@ export const registerSocketEvents = (socket) => {
 
 export const sendPreOffer = (data) => {
     socketIO.emit('pre-offer', data);
+}
+
+export const sendPreOfferAnswer = (data) => {
+    socketIO.emit('pre-offer-answer', data);
 }

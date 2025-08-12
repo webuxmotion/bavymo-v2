@@ -421,6 +421,10 @@ body {
     align-items: center;
 }
 
+.dialog_image_container img {
+    width: 45%;
+}
+
 .dialog_description {
     font-size: 20px;
     color: black;
