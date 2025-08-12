@@ -35,6 +35,18 @@ app.use((0, express_session_1.default)({
 }));
 io.on('connection', (socket) => {
     storage_1.default.addNewPeer(socket.id);
+    socket.on('pre-offer', (data) => {
+        const { callType, personalCode } = data;
+        const connectedPeers = storage_1.default.getConnectedPeers();
+        const connectedPeer = connectedPeers.find((peerSocketId) => peerSocketId === personalCode);
+        if (connectedPeer) {
+            const data = {
+                personalCode: socket.id,
+                callType
+            };
+            io.to(personalCode).emit('pre-offer', data);
+        }
+    });
     socket.on('message', (data) => {
         console.log(`Message from ${socket.id}: ${data}`);
         io.emit('message', data);

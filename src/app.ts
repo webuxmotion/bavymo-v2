@@ -37,6 +37,21 @@ app.use(session({
 io.on('connection', (socket: Socket) => {
   storage.addNewPeer(socket.id);
 
+  socket.on('pre-offer', (data) => {
+    const { callType, personalCode } = data;
+    const connectedPeers = storage.getConnectedPeers();
+    const connectedPeer = connectedPeers.find((peerSocketId) => peerSocketId === personalCode);
+
+    if (connectedPeer) {
+      const data = {
+        personalCode: socket.id,
+        callType
+      };
+
+      io.to(personalCode).emit('pre-offer', data);
+    }
+  });
+
   socket.on('message', (data: string) => {
     console.log(`Message from ${socket.id}: ${data}`);
     io.emit('message', data);
