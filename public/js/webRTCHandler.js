@@ -53,7 +53,7 @@ const createPeerConnection = () => {
     peerConnection = new RTCPeerConnection(configuration);
     isDataChannelOpen = false;
     retryCount = 0;
-    
+
     // Start connection timeout
     startConnectionTimeout();
 
@@ -111,12 +111,12 @@ const createPeerConnection = () => {
 
     peerConnection.onconnectionstatechange = (event) => {
         console.log('Connection state changed:', peerConnection.connectionState);
-        
+
         if (peerConnection.connectionState === 'connected') {
             console.log('WebRTC connection established successfully');
             clearConnectionTimeout();
             retryCount = 0;
-            ui.showInfoDialog('Connection established successfully!');
+            //ui.showInfoDialog('Connection established successfully!');
         } else if (peerConnection.connectionState === 'failed') {
             console.error('WebRTC connection failed');
             isDataChannelOpen = false;
@@ -136,8 +136,8 @@ const createPeerConnection = () => {
 
     peerConnection.oniceconnectionstatechange = (event) => {
         console.log('ICE connection state:', peerConnection.iceConnectionState);
-        
-        if (peerConnection.iceConnectionState === 'connected' || 
+
+        if (peerConnection.iceConnectionState === 'connected' ||
             peerConnection.iceConnectionState === 'completed') {
             console.log('ICE connection established successfully');
         } else if (peerConnection.iceConnectionState === 'failed') {
@@ -179,12 +179,12 @@ export const sendMessageUsingDataChannel = (message) => {
             isDataChannelOpen: isDataChannelOpen,
             connectionState: peerConnection?.connectionState
         });
-        
+
         // Show user-friendly error message
         ui.showInfoDialog('Connection not ready. Please wait for the connection to establish or try reconnecting.');
         return false;
     }
-    
+
     try {
         const stringifiedMessage = JSON.stringify(message);
         dataChannel.send(stringifiedMessage);
@@ -378,7 +378,7 @@ export const getConnectionStatus = () => {
             details: 'Peer connection not created'
         };
     }
-    
+
     return {
         status: peerConnection.connectionState,
         iceConnectionState: peerConnection.iceConnectionState,
@@ -389,40 +389,40 @@ export const getConnectionStatus = () => {
 }
 
 export const isConnectionReady = () => {
-    return peerConnection && 
-           peerConnection.connectionState === 'connected' && 
-           isDataChannelOpen;
+    return peerConnection &&
+        peerConnection.connectionState === 'connected' &&
+        isDataChannelOpen;
 }
 
 export const getConnectionStats = async () => {
     if (!peerConnection) {
         return null;
     }
-    
+
     try {
         const stats = await peerConnection.getStats();
         const connectionStats = {};
-        
+
         stats.forEach((report) => {
             if (report.type === 'candidate-pair' && report.state === 'succeeded') {
                 connectionStats.localCandidate = report.localCandidateId;
                 connectionStats.remoteCandidate = report.remoteCandidateId;
                 connectionStats.priority = report.priority;
             }
-            
+
             if (report.type === 'local-candidate' && report.id === connectionStats.localCandidate) {
                 connectionStats.localAddress = report.address;
                 connectionStats.localProtocol = report.protocol;
                 connectionStats.localType = report.candidateType;
             }
-            
+
             if (report.type === 'remote-candidate' && report.id === connectionStats.remoteCandidate) {
                 connectionStats.remoteAddress = report.address;
                 connectionStats.remoteProtocol = report.protocol;
                 connectionStats.remoteType = report.candidateType;
             }
         });
-        
+
         return connectionStats;
     } catch (error) {
         console.error('Error getting connection stats:', error);
@@ -433,24 +433,24 @@ export const getConnectionStats = async () => {
 // Debug function for troubleshooting (can be called from browser console)
 export const debugConnection = async () => {
     console.log('=== WebRTC Connection Debug Info ===');
-    
+
     const status = getConnectionStatus();
     console.log('Connection Status:', status);
-    
+
     const stats = await getConnectionStats();
     console.log('Connection Stats:', stats);
-    
+
     if (peerConnection) {
         console.log('ICE Connection State:', peerConnection.iceConnectionState);
         console.log('Connection State:', peerConnection.connectionState);
         console.log('Signaling State:', peerConnection.signalingState);
         console.log('Data Channel State:', isDataChannelOpen);
-        
+
         // Log ICE candidates
         console.log('Local Description:', peerConnection.localDescription);
         console.log('Remote Description:', peerConnection.remoteDescription);
     }
-    
+
     console.log('Connected User Details:', connectedUserDetails);
     console.log('Retry Count:', retryCount);
     console.log('=====================================');
@@ -465,7 +465,7 @@ const startConnectionTimeout = () => {
     if (connectionTimeout) {
         clearTimeout(connectionTimeout);
     }
-    
+
     connectionTimeout = setTimeout(() => {
         if (peerConnection && peerConnection.connectionState !== 'connected') {
             console.warn('Connection timeout - attempting retry');
@@ -485,15 +485,15 @@ const handleConnectionTimeout = () => {
     if (retryCount < MAX_RETRIES) {
         retryCount++;
         console.log(`Retrying connection... Attempt ${retryCount}/${MAX_RETRIES}`);
-        
+
         ui.showInfoDialog(`Connection attempt ${retryCount}/${MAX_RETRIES} failed. Retrying...`);
-        
+
         // Clean up existing connection
         if (peerConnection) {
             peerConnection.close();
             peerConnection = null;
         }
-        
+
         // Wait a bit before retrying
         setTimeout(() => {
             if (connectedUserDetails) {
