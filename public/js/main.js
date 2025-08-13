@@ -66,16 +66,49 @@ newMessageInput.addEventListener('keydown', (event) => {
     const key = event.key;
 
     if (key === 'Enter') {
-        webRTCHandler.sendMessageUsingDataChannel(event.target.value);
-        ui.appendMessage(event.target.value, true);
-        newMessageInput.value = '';
+        const message = event.target.value;
+        if (message.trim()) {
+            const sent = webRTCHandler.sendMessageUsingDataChannel(message);
+            if (sent) {
+                ui.appendMessage(message, true);
+                newMessageInput.value = '';
+            }
+        }
     }
 });
 
 const sendMessageButton = document.getElementById('send_message_button');
 sendMessageButton.addEventListener('click', () => {
     const message = newMessageInput.value;
-    webRTCHandler.sendMessageUsingDataChannel(message);
-    ui.appendMessage(message, true);
-    newMessageInput.value = '';
+    if (message.trim()) {
+        const sent = webRTCHandler.sendMessageUsingDataChannel(message);
+        if (sent) {
+            ui.appendMessage(message, true);
+            newMessageInput.value = '';
+        }
+    }
 });
+
+// Connection status monitoring
+let connectionStatusInterval;
+
+const startConnectionStatusMonitoring = () => {
+    connectionStatusInterval = setInterval(() => {
+        const status = webRTCHandler.getConnectionStatus();
+        if (status.status !== 'No connection') {
+            ui.showConnectionStatus(status);
+        } else {
+            ui.hideConnectionStatus();
+        }
+    }, 1000);
+};
+
+const stopConnectionStatusMonitoring = () => {
+    if (connectionStatusInterval) {
+        clearInterval(connectionStatusInterval);
+        connectionStatusInterval = null;
+    }
+};
+
+// Start monitoring when the page loads
+startConnectionStatusMonitoring();

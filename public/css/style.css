@@ -497,3 +497,47 @@ body {
 .display_none {
     display: none;
 }
+
+/* Connection Status Styles */
+.connection_status {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 14px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.status_label {
+    font-weight: bold;
+    color: #ccc;
+}
+
+.status_value {
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+.status_value.connected {
+    color: #4CAF50;
+}
+
+.status_value.disconnected {
+    color: #f44336;
+}
+
+.data_channel_ready {
+    color: #4CAF50;
+    font-size: 12px;
+}
+
+.data_channel_not_ready {
+    color: #f44336;
+    font-size: 12px;
+}

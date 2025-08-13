@@ -6,6 +6,11 @@ import * as store from './store.js';
 let connectedUserDetails;
 let peerConnection;
 let dataChannel;
+let isDataChannelOpen = false;
+let connectionTimeout;
+let retryCount = 0;
+const MAX_RETRIES = 3;
+const CONNECTION_TIMEOUT = 30000; // 30 seconds
 
 const defaultConstraints = {
     audio: true,
@@ -15,9 +20,22 @@ const defaultConstraints = {
 const configuration = {
     iceServers: [
         {
-            urls: 'stun:stun.l.google.com:13902'
+            urls: 'stun:stun.l.google.com:19302'
+        },
+        {
+            urls: 'stun:stun1.l.google.com:19302'
+        },
+        {
+            urls: 'stun:stun2.l.google.com:19302'
+        },
+        {
+            urls: 'stun:stun3.l.google.com:19302'
+        },
+        {
+            urls: 'stun:stun4.l.google.com:19302'
         }
-    ]
+    ],
+    iceCandidatePoolSize: 10
 }
 
 export const getLocalPreview = () => {
@@ -33,19 +51,50 @@ export const getLocalPreview = () => {
 
 const createPeerConnection = () => {
     peerConnection = new RTCPeerConnection(configuration);
+    isDataChannelOpen = false;
+    retryCount = 0;
+    
+    // Start connection timeout
+    startConnectionTimeout();
 
     dataChannel = peerConnection.createDataChannel('chat');
 
+    dataChannel.onopen = () => {
+        console.log('Data channel opened successfully');
+        isDataChannelOpen = true;
+    }
+
+    dataChannel.onclose = () => {
+        console.log('Data channel closed');
+        isDataChannelOpen = false;
+    }
+
+    dataChannel.onerror = (error) => {
+        console.error('Data channel error:', error);
+        isDataChannelOpen = false;
+    }
+
     peerConnection.ondatachannel = (event) => {
         const dataChannel = event.channel;
+        isDataChannelOpen = false;
 
         dataChannel.onopen = () => {
+            console.log('Data channel opened successfully');
+            isDataChannelOpen = true;
+        }
 
+        dataChannel.onclose = () => {
+            console.log('Data channel closed');
+            isDataChannelOpen = false;
+        }
+
+        dataChannel.onerror = (error) => {
+            console.error('Data channel error:', error);
+            isDataChannelOpen = false;
         }
 
         dataChannel.onmessage = (event) => {
             const message = JSON.parse(event.data);
-
             ui.appendMessage(message);
         }
     }
@@ -61,9 +110,47 @@ const createPeerConnection = () => {
     }
 
     peerConnection.onconnectionstatechange = (event) => {
+        console.log('Connection state changed:', peerConnection.connectionState);
+        
         if (peerConnection.connectionState === 'connected') {
-
+            console.log('WebRTC connection established successfully');
+            clearConnectionTimeout();
+            retryCount = 0;
+            ui.showInfoDialog('Connection established successfully!');
+        } else if (peerConnection.connectionState === 'failed') {
+            console.error('WebRTC connection failed');
+            isDataChannelOpen = false;
+            clearConnectionTimeout();
+            ui.showInfoDialog('Connection failed. Please try again.');
+        } else if (peerConnection.connectionState === 'disconnected') {
+            console.log('WebRTC connection disconnected');
+            isDataChannelOpen = false;
+            clearConnectionTimeout();
+            ui.showInfoDialog('Connection lost. Please reconnect.');
+        } else if (peerConnection.connectionState === 'closed') {
+            console.log('WebRTC connection closed');
+            isDataChannelOpen = false;
+            clearConnectionTimeout();
         }
+    }
+
+    peerConnection.oniceconnectionstatechange = (event) => {
+        console.log('ICE connection state:', peerConnection.iceConnectionState);
+        
+        if (peerConnection.iceConnectionState === 'connected' || 
+            peerConnection.iceConnectionState === 'completed') {
+            console.log('ICE connection established successfully');
+        } else if (peerConnection.iceConnectionState === 'failed') {
+            console.error('ICE connection failed');
+            ui.showInfoDialog('Connection failed. This might be due to network restrictions. Please try again.');
+        } else if (peerConnection.iceConnectionState === 'disconnected') {
+            console.log('ICE connection disconnected');
+            ui.showInfoDialog('Connection lost. Please wait for reconnection or try again.');
+        }
+    }
+
+    peerConnection.onicegatheringstatechange = (event) => {
+        console.log('ICE gathering state:', peerConnection.iceGatheringState);
     }
 
     // receiving tracks
@@ -86,8 +173,27 @@ const createPeerConnection = () => {
 }
 
 export const sendMessageUsingDataChannel = (message) => {
-    const stringifiedMessage = JSON.stringify(message);
-    dataChannel.send(stringifiedMessage);
+    if (!dataChannel || !isDataChannelOpen) {
+        console.warn('Data channel is not ready. Current state:', {
+            dataChannelExists: !!dataChannel,
+            isDataChannelOpen: isDataChannelOpen,
+            connectionState: peerConnection?.connectionState
+        });
+        
+        // Show user-friendly error message
+        ui.showInfoDialog('Connection not ready. Please wait for the connection to establish or try reconnecting.');
+        return false;
+    }
+    
+    try {
+        const stringifiedMessage = JSON.stringify(message);
+        dataChannel.send(stringifiedMessage);
+        return true;
+    } catch (error) {
+        console.error('Error sending message via data channel:', error);
+        ui.showInfoDialog('Failed to send message. Please try again.');
+        return false;
+    }
 }
 
 export const sendPreOffer = (callType, personalCode) => {
@@ -264,3 +370,140 @@ export const switchBetweenCameraAndScreenSharing = async (screenSharingActive) =
         }
     }
 }
+
+export const getConnectionStatus = () => {
+    if (!peerConnection) {
+        return {
+            status: 'No connection',
+            details: 'Peer connection not created'
+        };
+    }
+    
+    return {
+        status: peerConnection.connectionState,
+        iceConnectionState: peerConnection.iceConnectionState,
+        iceGatheringState: peerConnection.iceGatheringState,
+        dataChannelReady: isDataChannelOpen,
+        hasDataChannel: !!dataChannel
+    };
+}
+
+export const isConnectionReady = () => {
+    return peerConnection && 
+           peerConnection.connectionState === 'connected' && 
+           isDataChannelOpen;
+}
+
+export const getConnectionStats = async () => {
+    if (!peerConnection) {
+        return null;
+    }
+    
+    try {
+        const stats = await peerConnection.getStats();
+        const connectionStats = {};
+        
+        stats.forEach((report) => {
+            if (report.type === 'candidate-pair' && report.state === 'succeeded') {
+                connectionStats.localCandidate = report.localCandidateId;
+                connectionStats.remoteCandidate = report.remoteCandidateId;
+                connectionStats.priority = report.priority;
+            }
+            
+            if (report.type === 'local-candidate' && report.id === connectionStats.localCandidate) {
+                connectionStats.localAddress = report.address;
+                connectionStats.localProtocol = report.protocol;
+                connectionStats.localType = report.candidateType;
+            }
+            
+            if (report.type === 'remote-candidate' && report.id === connectionStats.remoteCandidate) {
+                connectionStats.remoteAddress = report.address;
+                connectionStats.remoteProtocol = report.protocol;
+                connectionStats.remoteType = report.candidateType;
+            }
+        });
+        
+        return connectionStats;
+    } catch (error) {
+        console.error('Error getting connection stats:', error);
+        return null;
+    }
+};
+
+// Debug function for troubleshooting (can be called from browser console)
+export const debugConnection = async () => {
+    console.log('=== WebRTC Connection Debug Info ===');
+    
+    const status = getConnectionStatus();
+    console.log('Connection Status:', status);
+    
+    const stats = await getConnectionStats();
+    console.log('Connection Stats:', stats);
+    
+    if (peerConnection) {
+        console.log('ICE Connection State:', peerConnection.iceConnectionState);
+        console.log('Connection State:', peerConnection.connectionState);
+        console.log('Signaling State:', peerConnection.signalingState);
+        console.log('Data Channel State:', isDataChannelOpen);
+        
+        // Log ICE candidates
+        console.log('Local Description:', peerConnection.localDescription);
+        console.log('Remote Description:', peerConnection.remoteDescription);
+    }
+    
+    console.log('Connected User Details:', connectedUserDetails);
+    console.log('Retry Count:', retryCount);
+    console.log('=====================================');
+};
+
+// Make debug function available globally
+if (typeof window !== 'undefined') {
+    window.debugWebRTC = debugConnection;
+}
+
+const startConnectionTimeout = () => {
+    if (connectionTimeout) {
+        clearTimeout(connectionTimeout);
+    }
+    
+    connectionTimeout = setTimeout(() => {
+        if (peerConnection && peerConnection.connectionState !== 'connected') {
+            console.warn('Connection timeout - attempting retry');
+            handleConnectionTimeout();
+        }
+    }, CONNECTION_TIMEOUT);
+};
+
+const clearConnectionTimeout = () => {
+    if (connectionTimeout) {
+        clearTimeout(connectionTimeout);
+        connectionTimeout = null;
+    }
+};
+
+const handleConnectionTimeout = () => {
+    if (retryCount < MAX_RETRIES) {
+        retryCount++;
+        console.log(`Retrying connection... Attempt ${retryCount}/${MAX_RETRIES}`);
+        
+        ui.showInfoDialog(`Connection attempt ${retryCount}/${MAX_RETRIES} failed. Retrying...`);
+        
+        // Clean up existing connection
+        if (peerConnection) {
+            peerConnection.close();
+            peerConnection = null;
+        }
+        
+        // Wait a bit before retrying
+        setTimeout(() => {
+            if (connectedUserDetails) {
+                createPeerConnection();
+                sendWebRTCOffer();
+            }
+        }, 2000);
+    } else {
+        console.error('Max retry attempts reached');
+        ui.showInfoDialog('Connection failed after multiple attempts. Please check your network and try again.');
+        retryCount = 0;
+    }
+};

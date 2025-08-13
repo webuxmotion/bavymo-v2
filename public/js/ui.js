@@ -52,30 +52,31 @@ export const removeAllDialogs = () => {
 export const showInfoDialog = (preOfferAnswer) => {
     let infoDialog = null;
 
-    if (preOfferAnswer === constants.preOfferAnswer.CALLEE_NOT_FOUND) {
+    // Handle custom string messages
+    if (typeof preOfferAnswer === 'string' && !Object.values(constants.preOfferAnswer).includes(preOfferAnswer)) {
+        infoDialog = elements.getInfoDialog(
+            'Info',
+            preOfferAnswer,
+            'dialogAvatar.png'
+        );
+    } else if (preOfferAnswer === constants.preOfferAnswer.CALLEE_NOT_FOUND) {
         infoDialog = elements.getInfoDialog(
             'Callee not found',
             'Please check personal code',
             'rejectedCall.png'
         );
-    }
-
-    if (preOfferAnswer === constants.preOfferAnswer.CALL_UNAVAILABLE) {
+    } else if (preOfferAnswer === constants.preOfferAnswer.CALL_UNAVAILABLE) {
         infoDialog = elements.getInfoDialog(
             'Call is not possible',
             'Probably callee is busy. Please try again later'
         );
-    }
-
-    if (preOfferAnswer === constants.preOfferAnswer.CALL_REJECTED) {
+    } else if (preOfferAnswer === constants.preOfferAnswer.CALL_REJECTED) {
         infoDialog = elements.getInfoDialog(
             'Call rejected',
             'Callee rejected your call',
             'rejectedCall.png'
         );
-    }
-
-    if (preOfferAnswer === constants.preOfferAnswer.CALL_ACCEPTED) {
+    } else if (preOfferAnswer === constants.preOfferAnswer.CALL_ACCEPTED) {
 
     }
 
@@ -156,7 +157,27 @@ export const updateCameraButton = (cameraActive) => {
     cameraButtonImage.src = cameraActive ? cameraOffImgSrc : cameraOnImgSrc;
 }
 
+export const showConnectionStatus = (status) => {
+    const statusContainer = document.getElementById('connection_status');
+    if (statusContainer) {
+        statusContainer.innerHTML = `
+            <div class="connection_status">
+                <span class="status_label">Connection:</span>
+                <span class="status_value ${status.status === 'connected' ? 'connected' : 'disconnected'}">
+                    ${status.status}
+                </span>
+                ${status.dataChannelReady ? '<span class="data_channel_ready">✓ Data Ready</span>' : '<span class="data_channel_not_ready">✗ Data Not Ready</span>'}
+            </div>
+        `;
+    }
+}
 
+export const hideConnectionStatus = () => {
+    const statusContainer = document.getElementById('connection_status');
+    if (statusContainer) {
+        statusContainer.innerHTML = '';
+    }
+}
 
 // ui helpers
 const enableDashboard = () => {

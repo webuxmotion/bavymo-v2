@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebRTC Connection Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .status.connected { background: #d4edda; color: #155724; }
+        .status.disconnected { background: #f8d7da; color: #721c24; }
+        .status.pending { background: #fff3cd; color: #856404; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #6c757d; cursor: not-allowed; }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>WebRTC Cross-Network Connection Test</h1>
+    
+    <div class="test-section">
+        <h2>Connection Status</h2>
+        <div id="connection-status" class="status disconnected">Not Connected</div>
+        <div id="data-channel-status" class="status disconnected">Data Channel: Not Ready</div>
+        <button onclick="checkConnection()">Check Connection</button>
+        <button onclick="debugConnection()">Debug Info</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test Message Sending</h2>
+        <input type="text" id="test-message" placeholder="Enter test message" style="width: 300px; padding: 8px;">
+        <button onclick="sendTestMessage()">Send Message</button>
+        <div id="message-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Connection Log</h2>
+        <div id="connection-log" class="log"></div>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Instructions</h2>
+        <ol>
+            <li>Open this page in two different browsers or devices</li>
+            <li>Use the main application to establish a connection between them</li>
+            <li>Come back to this test page to monitor connection status</li>
+            <li>Use the debug functions to troubleshoot any issues</li>
+        </ol>
+    </div>
+
+    <script>
+        // Mock WebRTC handler for testing
+        const mockWebRTC = {
+            getConnectionStatus: () => ({
+                status: 'connected',
+                iceConnectionState: 'connected',
+                dataChannelReady: true,
+                hasDataChannel: true
+            }),
+            isConnectionReady: () => true,
+            sendMessageUsingDataChannel: (msg) => {
+                log(`Attempting to send message: ${msg}`);
+                return true;
+            },
+            getConnectionStats: async () => ({
+                localAddress: '192.168.1.100',
+                remoteAddress: '10.0.0.50',
+                localType: 'host',
+                remoteType: 'relay'
+            })
+        };
+
+        // Global debug function
+        window.debugWebRTC = async function() {
+            log('=== Debug Information ===');
+            log('Connection Status:', mockWebRTC.getConnectionStatus());
+            log('Connection Stats:', await mockWebRTC.getConnectionStats());
+            log('Is Ready:', mockWebRTC.isConnectionReady());
+            log('=======================');
+        };
+
+        function log(message, ...args) {
+            const logDiv = document.getElementById('connection-log');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message} ${args.map(arg => JSON.stringify(arg)).join(' ')}`;
+            logDiv.innerHTML += logEntry + '<br>';
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message, ...args);
+        }
+
+        function checkConnection() {
+            const status = mockWebRTC.getConnectionStatus();
+            const statusDiv = document.getElementById('connection-status');
+            const dataChannelDiv = document.getElementById('data-channel-status');
+            
+            if (status.status === 'connected') {
+                statusDiv.className = 'status connected';
+                statusDiv.textContent = `Connected (${status.iceConnectionState})`;
+            } else {
+                statusDiv.className = 'status disconnected';
+                statusDiv.textContent = `Not Connected (${status.status})`;
+            }
+            
+            if (status.dataChannelReady) {
+                dataChannelDiv.className = 'status connected';
+                dataChannelDiv.textContent = 'Data Channel: Ready';
+            } else {
+                dataChannelDiv.className = 'status disconnected';
+                dataChannelDiv.textContent = 'Data Channel: Not Ready';
+            }
+            
+            log('Connection status checked:', status);
+        }
+
+        function sendTestMessage() {
+            const messageInput = document.getElementById('test-message');
+            const message = messageInput.value.trim();
+            const resultDiv = document.getElementById('message-result');
+            
+            if (!message) {
+                resultDiv.innerHTML = '<span style="color: red;">Please enter a message</span>';
+                return;
+            }
+            
+            if (mockWebRTC.isConnectionReady()) {
+                const sent = mockWebRTC.sendMessageUsingDataChannel(message);
+                if (sent) {
+                    resultDiv.innerHTML = '<span style="color: green;">Message sent successfully!</span>';
+                    messageInput.value = '';
+                    log('Test message sent successfully:', message);
+                } else {
+                    resultDiv.innerHTML = '<span style="color: red;">Failed to send message</span>';
+                    log('Failed to send test message:', message);
+                }
+            } else {
+                resultDiv.innerHTML = '<span style="color: red;">Connection not ready</span>';
+                log('Cannot send message - connection not ready');
+            }
+        }
+
+        function clearLog() {
+            document.getElementById('connection-log').innerHTML = '';
+        }
+
+        function debugConnection() {
+            window.debugWebRTC();
+        }
+
+        // Auto-check connection status every 2 seconds
+        setInterval(checkConnection, 2000);
+        
+        // Initial check
+        checkConnection();
+        
+        log('Test page loaded. Use this page to monitor WebRTC connections.');
+    </script>
+</body>
+</html>
