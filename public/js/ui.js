@@ -130,6 +130,21 @@ const micOffImgSrc = '/images/micOff.png';
 const cameraOnImgSrc = '/images/camera.png';
 const cameraOffImgSrc = '/images/cameraOff.png';
 
+// ui messages
+export const appendMessage = (message, right = false) => {
+    const messagesContainer = document.getElementById('messages_container');
+    const messageElement = right ? 
+        elements.getRightMessage(message) : 
+        elements.getLeftMessage(message);
+
+    messagesContainer.appendChild(messageElement);
+}
+
+export const clearMessenger = () => {
+    const messagesContainer = document.getElementById('messages_container');
+    messagesContainer.querySelectorAll('*').forEach(el => el.remove());
+}
+
 // ui call buttons
 export const updateMicButton = (micActive) => {
     const micButtonImage = document.getElementById('mic_button_image');

@@ -40,14 +40,13 @@ const createPeerConnection = () => {
         const dataChannel = event.channel;
 
         dataChannel.onopen = () => {
-            console.log('peer connection is ready to receive data channel messages')
+
         }
 
         dataChannel.onmessage = (event) => {
-            console.log('message came from data channel')
             const message = JSON.parse(event.data);
 
-            console.log(message);
+            ui.appendMessage(message);
         }
     }
 
@@ -63,7 +62,7 @@ const createPeerConnection = () => {
 
     peerConnection.onconnectionstatechange = (event) => {
         if (peerConnection.connectionState === 'connected') {
-            console.log('connected with other peer');
+
         }
     }
 
@@ -194,7 +193,7 @@ function rejectCallHandler() {
 }
 
 function rejectOutcomingCallHandler() {
-    console.log('rejectOutcomingCallHandler');
+
 }
 
 function sendPreOfferAnswer(preOfferAnswer) {
@@ -239,8 +238,6 @@ export const switchBetweenCameraAndScreenSharing = async (screenSharingActive) =
 
         ui.updateLocalVideo(localStream);
     } else {
-        console.log('switching for screen sharing');
-
         try {
             screenSharingStream = await navigator.mediaDevices.getDisplayMedia({
                 video: true

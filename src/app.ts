@@ -79,11 +79,6 @@ io.on('connection', (socket: Socket) => {
     }
   });
 
-  socket.on('message', (data: string) => {
-    console.log(`Message from ${socket.id}: ${data}`);
-    io.emit('message', data);
-  });
-
   socket.on('disconnect', () => {
     storage.removePeer(socket.id);
   });

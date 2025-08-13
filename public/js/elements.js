@@ -22,7 +22,7 @@ export const getIncomingCallDialog = (callTypeInfo, acceptCallHandler, rejectCal
   wrapper.querySelector('#accept_button').addEventListener('click', acceptCallHandler);
   wrapper.querySelector('#reject_button').addEventListener('click', rejectCallHandler);
 
-  return wrapper.firstElementChild; // Return actual DOM element
+  return wrapper.firstElementChild;
 };
 
 export const getOutcomingCallDialog = (rejectOutcomingCallHandler) => {
@@ -45,7 +45,7 @@ export const getOutcomingCallDialog = (rejectOutcomingCallHandler) => {
 
   wrapper.querySelector('#reject_button').addEventListener('click', rejectOutcomingCallHandler);
 
-  return wrapper.firstElementChild; // Return actual DOM element
+  return wrapper.firstElementChild;
 }
 
 export const getInfoDialog = (title, description, iconFilename = 'dialogAvatar.png') => {
@@ -62,5 +62,31 @@ export const getInfoDialog = (title, description, iconFilename = 'dialogAvatar.p
     </div>
   `;
 
-  return wrapper.firstElementChild; // Return actual DOM element
+  return wrapper.firstElementChild;
+}
+
+export const getLeftMessage = (message) => {
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = `
+    <div class="message_left_container">
+      <p class="message_left_paragraph">
+        ${message}
+      </p>
+    </div>
+  `;
+
+  return wrapper.firstElementChild;
+}
+
+export const getRightMessage = (message) => {
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = `
+    <div class="message_right_container">
+      <p class="message_right_paragraph">
+        ${message}
+      </p>
+    </div>
+  `;
+
+  return wrapper.firstElementChild;
 }

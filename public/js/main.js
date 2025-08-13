@@ -64,10 +64,10 @@ const newMessageInput = document.getElementById('new_message_input');
 newMessageInput.addEventListener('keydown', (event) => {
 
     const key = event.key;
-    console.log('input keydown, key pressed: ', key);
 
     if (key === 'Enter') {
         webRTCHandler.sendMessageUsingDataChannel(event.target.value);
+        ui.appendMessage(event.target.value, true);
         newMessageInput.value = '';
     }
 });
@@ -76,5 +76,6 @@ const sendMessageButton = document.getElementById('send_message_button');
 sendMessageButton.addEventListener('click', () => {
     const message = newMessageInput.value;
     webRTCHandler.sendMessageUsingDataChannel(message);
+    ui.appendMessage(message, true);
     newMessageInput.value = '';
 });
