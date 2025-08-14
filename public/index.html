@@ -14,8 +14,46 @@
         <ul>
             <li><a href="/design/main-page.html">Main page</a></li>
             <li><a href="/design/main-page-mobile.html">Main page - Mobile</a></li>
+            <li>beauty_n_beast_open.mp3</li>
+            <li>cisco_opus_1.mp3</li>
+            <li>school_s_out.mp3</li>
+            <li>kujira_shima_yori.mp3</li>
+            <li>bark_at_the_moon.mp3</li>
+            <li>bmw_chime.mp3</li>
+            <li>nokia_lumia.mp3</li>
+            <li>samsung_bubble.mp3</li>
         </ul>
     </div>
+
+    <audio id="ringtone"></audio>
+
+    <script>
+        const audio = document.getElementById("ringtone");
+        let currentSong = null;
+
+        document.querySelectorAll(".design_links li").forEach(li => {
+            // Only bind click if it's not a link
+            if (!li.querySelector("a")) {
+                li.addEventListener("click", () => {
+                    const songName = li.textContent.trim();
+                    const songPath = `/ringtones/${songName}`;
+
+                    // If clicked the same song → toggle play/stop
+                    if (currentSong === songPath && !audio.paused) {
+                        audio.pause();
+                        audio.currentTime = 0;
+                        currentSong = null;
+                    } else {
+                        audio.src = songPath;
+                        audio.play();
+                        currentSong = songPath;
+                    }
+                });
+            }
+        });
+    </script>
+
+
     <!-- Connection Status Container -->
     <div id="connection_status"></div>
 
