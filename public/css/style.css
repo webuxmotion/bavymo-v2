@@ -541,3 +541,9 @@ body {
     color: #f44336;
     font-size: 12px;
 }
+
+.design_links {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
