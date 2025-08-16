@@ -19,30 +19,30 @@ const defaultConstraints = {
 
 const configuration = {
     iceServers: [
-        {
-            urls: 'stun:stun.l.google.com:19302'
-        },
-        {
-            urls: 'stun:stun1.l.google.com:19302'
-        },
-        {
-            urls: 'stun:stun2.l.google.com:19302'
-        },
-        {
-            urls: 'stun:stun3.l.google.com:19302'
-        },
-        {
-            urls: 'stun:stun4.l.google.com:19302'
-        },
-        {
-            urls: [
-                'stun:185.233.47.117:3478',
-                'turn:185.233.47.117:3478?transport=udp',
-                'turn:185.233.47.117:3478?transport=tcp'
-            ],
-            username: 'webrtcuser',
-            credential: 'strongpassword'
-        }
+        // {
+        //     urls: 'stun:stun.l.google.com:19302'
+        // },
+        // {
+        //     urls: 'stun:stun1.l.google.com:19302'
+        // },
+        // {
+        //     urls: 'stun:stun2.l.google.com:19302'
+        // },
+        // {
+        //     urls: 'stun:stun3.l.google.com:19302'
+        // },
+        // {
+        //     urls: 'stun:stun4.l.google.com:19302'
+        // },
+        // {
+        //     urls: [
+        //         'stun:185.233.47.117:3478',
+        //         'turn:185.233.47.117:3478?transport=udp',
+        //         'turn:185.233.47.117:3478?transport=tcp'
+        //     ],
+        //     username: 'webrtcuser',
+        //     credential: 'strongpassword'
+        // }
     ],
     iceCandidatePoolSize: 10
 }
