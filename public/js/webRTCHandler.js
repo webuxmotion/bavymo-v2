@@ -29,7 +29,7 @@ const configuration = {
         }
     ],
     iceCandidatePoolSize: 10,
-    iceTransportPolicy: "all" // for testing
+    iceTransportPolicy: "relay" // for testing
 };
 
 export const getLocalPreview = () => {
